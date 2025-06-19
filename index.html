@@ -2,89 +2,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Fallout Simulator v2</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    select, input { margin: 10px 0; padding: 5px; width: 100%; max-width: 400px; }
-    #map { height: 400px; margin-top: 20px; }
-  </style>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <meta charset="UTF-8">
+    <title>Nuclear Fallout Simulation</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        select, button { margin-top: 10px; display: block; }
+    </style>
 </head>
 <body>
-  <h2>🌍 Fallout Simulator (v2)</h2>
-
-  <label>Select Country:
-    <select id="countrySel">
-      <option value="">-- Select Country --</option>
+    <h1>Nuclear Plant Selection</h1>
+    <label for="countrySelect">Select Country:</label>
+    <select id="countrySelect">
+        <option value="">-- Select Country --</option>
     </select>
-  </label>
 
-  <label>Nuclear Plant:
-    <select id="plantSel">
-      <option value="">-- Select Plant --</option>
+    <label for="plantSelect">Select Plant:</label>
+    <select id="plantSelect">
+        <option value="">-- Select Plant --</option>
     </select>
-  </label>
 
-  <label>Scenario Type:
-    <select>
-      <option>Reactor Meltdown</option>
-      <option>Steam Explosion</option>
-    </select>
-  </label>
+    <script>
+        const embeddedPlantData = {
+          "features": [
+            {"properties": {"Country": "Germany", "Name": "Brokdorf"}, "geometry": {"coordinates": [9.333, 53.85]}},
+            {"properties": {"Country": "Germany", "Name": "Gundremmingen"}, "geometry": {"coordinates": [10.383, 48.5]}},
+            {"properties": {"Country": "Iran", "Name": "Bushehr"}, "geometry": {"coordinates": [50.882, 28.829]}},
+            {"properties": {"Country": "Iran", "Name": "Arak"}, "geometry": {"coordinates": [49.438, 34.407]}},
+            {"properties": {"Country": "Israel", "Name": "Dimona"}, "geometry": {"coordinates": [35.020, 31.048]}},
+            {"properties": {"Country": "Russia", "Name": "Kursk"}, "geometry": {"coordinates": [35.7, 51.7]}},
+            {"properties": {"Country": "Russia", "Name": "Smolensk"}, "geometry": {"coordinates": [33.3, 54.2]}},
+            {"properties": {"Country": "United Kingdom", "Name": "Sizewell B"}, "geometry": {"coordinates": [1.621, 52.21]}},
+            {"properties": {"Country": "United Kingdom", "Name": "Hinkley Point B"}, "geometry": {"coordinates": [-3.15, 51.21]}},
+            {"properties": {"Country": "Kuwait", "Name": "Imaginary Kuwait Reactor"}, "geometry": {"coordinates": [47.9783, 29.3759]}}
+          ]
+        };
 
-  <label>Wind Direction (°):
-    <input type="number" placeholder="e.g. 90">
-  </label>
+        const countrySelect = document.getElementById("countrySelect");
+        const plantSelect = document.getElementById("plantSelect");
 
-  <label>Wind Speed (km/h):
-    <input type="number" placeholder="e.g. 30">
-  </label>
+        const countries = [...new Set(embeddedPlantData.features.map(p => p.properties.Country))].sort();
+        countries.forEach(c => {
+            const opt = document.createElement("option");
+            opt.value = c;
+            opt.textContent = c;
+            countrySelect.appendChild(opt);
+        });
 
-  <div id="map"></div>
-
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script>
-    const countrySel = document.getElementById("countrySel");
-    const plantSel = document.getElementById("plantSel");
-
-    let allPlants = [];
-
-    fetch("nuclear_plants.json")
-      .then(res => res.json())
-      .then(data => {
-        allPlants = data.features;
-        const countries = [...new Set(allPlants.map(p => p.properties.Country))].sort();
-        for (let c of countries) {
-          let opt = document.createElement("option");
-          opt.value = c;
-          opt.textContent = c;
-          countrySel.appendChild(opt);
-        }
-      });
-
-    countrySel.addEventListener("change", () => {
-      const selectedCountry = countrySel.value;
-      plantSel.innerHTML = '<option value="">-- Select Plant --</option>';
-      const filtered = allPlants.filter(p => p.properties.Country === selectedCountry);
-      for (let plant of filtered) {
-        let opt = document.createElement("option");
-        opt.value = `${plant.geometry.coordinates[1]},${plant.geometry.coordinates[0]}`;
-        opt.textContent = plant.properties.Name;
-        plantSel.appendChild(opt);
-      }
-    });
-
-    const map = L.map('map').setView([30, 0], 2);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-
-    plantSel.addEventListener("change", () => {
-      const [lat, lng] = plantSel.value.split(',').map(Number);
-      map.setView([lat, lng], 6);
-      L.marker([lat, lng]).addTo(map);
-    });
-  </script>
+        countrySelect.addEventListener("change", () => {
+            plantSelect.innerHTML = '<option value="">-- Select Plant --</option>';
+            const selectedCountry = countrySelect.value;
+            const plants = embeddedPlantData.features.filter(p => p.properties.Country === selectedCountry);
+            plants.forEach(p => {
+                const opt = document.createElement("option");
+                opt.value = `${p.geometry.coordinates[1]},${p.geometry.coordinates[0]}`;
+                opt.textContent = p.properties.Name;
+                plantSelect.appendChild(opt);
+            });
+        });
+    </script>
 </body>
 </html>
