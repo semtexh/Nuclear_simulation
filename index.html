@@ -4,96 +4,126 @@
 <head>
     <meta charset="UTF-8">
     <title>Fallout Simulation Tool</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-        #form { padding: 20px; background: #f5f5f5; display: flex; flex-wrap: wrap; gap: 10px; }
-        select, input, button { padding: 8px; font-size: 14px; }
-        #map { width: 100%; height: 80vh; }
-        .form-section { flex: 1 1 200px; min-width: 180px; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f9;
+            color: #333;
+        }
+        header {
+            background: #004085;
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+        }
+        main {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .form-group {
+            margin: 1rem 0;
+            width: 100%;
+            max-width: 600px;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        select, input[type="number"], button {
+            width: 100%;
+            padding: 0.5rem;
+            font-size: 1rem;
+        }
+        #map {
+            margin-top: 2rem;
+            width: 100%;
+            max-width: 800px;
+            height: 500px;
+            background: #ddd;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #555;
+        }
     </style>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
-    <div id="form">
-        <div class="form-section">
-            <label for="countrySelect">Country:</label>
-            <select id="countrySelect"></select>
+    <header>
+        <h1>Fallout Simulation Tool</h1>
+    </header>
+    <main>
+        <div class="form-group">
+            <label for="countrySelect">Select Country:</label>
+            <select id="countrySelect">
+                <option value="">-- Select Country --</option>
+                <option value="Turkey">Turkey</option>
+                <option value="Iran">Iran</option>
+                <option value="Russia">Russia</option>
+                <option value="Israel">Israel</option>
+                <option value="Germany">Germany</option>
+                <option value="United Kingdom">United Kingdom</option>
+                <option value="Kuwait">Kuwait</option>
+            </select>
         </div>
-        <div class="form-section">
-            <label for="plantSelect">Nuclear Facility:</label>
-            <select id="plantSelect"></select>
+        <div class="form-group">
+            <label for="plantSelect">Select Nuclear Facility:</label>
+            <select id="plantSelect">
+                <option value="">-- Select Facility --</option>
+            </select>
         </div>
-        <div class="form-section">
+        <div class="form-group">
             <label for="windSpeed">Wind Speed (km/h):</label>
             <input type="number" id="windSpeed" value="20">
         </div>
-        <div class="form-section">
-            <label for="windDir">Wind Direction (° from North):</label>
-            <input type="number" id="windDir" value="90">
+        <div class="form-group">
+            <label for="windDirection">Wind Direction (°):</label>
+            <input type="number" id="windDirection" value="90">
         </div>
-        <div class="form-section">
+        <div class="form-group">
             <button onclick="calculateFallout()">Simulate Fallout</button>
         </div>
-    </div>
-    <div id="map"></div>
-
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <div id="map">[Map will be displayed here]</div>
+    </main>
     <script>
-        const map = L.map('map').setView([38, 35], 5);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 18,
-        }).addTo(map);
+        const facilities = {
+            "Turkey": [{"name": "Akkuyu NPP", coords: [36.1581, 33.6751]}],
+            "Iran": [{"name": "Bushehr NPP", coords: [28.9686, 50.8383]}],
+            "Russia": [{"name": "Kursk NPP", coords: [51.6606, 35.6044]}],
+            "Israel": [{"name": "Dimona Reactor", coords: [31.0000, 35.0000]}],
+            "Germany": [{"name": "Emsland NPP", coords: [52.4935, 7.3171]}],
+            "United Kingdom": [{"name": "Hinkley Point C", coords: [51.209, -3.158]}],
+            "Kuwait": [{"name": "Research Reactor", coords: [29.3759, 47.9774]}]
+        };
 
-        const nuclearData = [
-            { country: "Germany", name: "Brokdorf", lat: 53.85, lon: 9.3 },
-            { country: "UK", name: "Hinkley Point B", lat: 51.209, lon: -3.152 },
-            { country: "Russia", name: "Kursk NPP", lat: 51.66, lon: 35.604 },
-            { country: "Iran", name: "Bushehr", lat: 28.829, lon: 50.893 },
-            { country: "Israel", name: "Dimona Research Center", lat: 31.05, lon: 35.03 },
-            { country: "Turkey", name: "Akkuyu", lat: 36.15, lon: 33.5 },
-            { country: "Kuwait", name: "No Nuclear Plant", lat: 29.3759, lon: 47.9774 }
-        ];
-
-        const countrySel = document.getElementById("countrySelect");
-        const plantSel = document.getElementById("plantSelect");
-
-        const countries = [...new Set(nuclearData.map(d => d.country))].sort();
-        countries.forEach(c => {
-            const opt = document.createElement("option");
-            opt.value = c;
-            opt.textContent = c;
-            countrySel.appendChild(opt);
-        });
-
-        countrySel.addEventListener("change", () => {
-            plantSel.innerHTML = '<option value="">-- Select Plant --</option>';
-            const plants = nuclearData.filter(d => d.country === countrySel.value);
-            plants.forEach(p => {
-                const opt = document.createElement("option");
-                opt.value = `${p.lat},${p.lon}`;
-                opt.textContent = p.name;
-                plantSel.appendChild(opt);
-            });
+        document.getElementById("countrySelect").addEventListener("change", function() {
+            const country = this.value;
+            const plantSel = document.getElementById("plantSelect");
+            plantSel.innerHTML = '<option value="">-- Select Facility --</option>';
+            if (facilities[country]) {
+                for (const facility of facilities[country]) {
+                    const opt = document.createElement("option");
+                    opt.value = facility.coords.join(",");
+                    opt.textContent = facility.name;
+                    plantSel.appendChild(opt);
+                }
+            }
         });
 
         function calculateFallout() {
-            const coords = plantSel.value.split(",");
-            const lat = parseFloat(coords[0]);
-            const lon = parseFloat(coords[1]);
-            const windSpeed = parseFloat(document.getElementById("windSpeed").value);
-            const windDir = parseFloat(document.getElementById("windDir").value);
-
-            map.setView([lat, lon], 7);
-
-            const falloutDistance = windSpeed * 1.5;  // Simplified model
-            const angleRad = windDir * Math.PI / 180;
-
-            const falloutLat = lat + (falloutDistance / 111) * Math.cos(angleRad);
-            const falloutLon = lon + (falloutDistance / 111) * Math.sin(angleRad) / Math.cos(lat * Math.PI / 180);
-
-            L.marker([lat, lon]).addTo(map).bindPopup("Nuclear Plant").openPopup();
-            L.circle([falloutLat, falloutLon], { radius: 5000, color: "red" }).addTo(map);
+            const coords = document.getElementById("plantSelect").value;
+            const windSpeed = document.getElementById("windSpeed").value;
+            const windDirection = document.getElementById("windDirection").value;
+            if (!coords) {
+                alert("Please select a facility.");
+                return;
+            }
+            document.getElementById("map").innerHTML = 
+                `<p>Simulating fallout from coordinates ${coords} with wind speed ${windSpeed} km/h and direction ${windDirection}°...</p>`;
         }
     </script>
 </body>
