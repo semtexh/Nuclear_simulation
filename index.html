@@ -2,120 +2,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Nuclear Fallout Simulator</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    select, input { margin: 10px 0; padding: 6px; width: 250px; }
-    #map { height: 500px; width: 100%; margin-top: 20px; }
-  </style>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <meta charset="UTF-8">
+    <title>Fallout Simulation Tool</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f4f4f9;
+            color: #333;
+        }
+        header {
+            background: #20232a;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            max-width: 800px;
+            margin: auto;
+        }
+        label, select, input, button {
+            margin-top: 0.75rem;
+            font-size: 1rem;
+            padding: 0.5rem;
+            width: 100%;
+        }
+        #map {
+            margin-top: 1rem;
+            height: 400px;
+            width: 100%;
+            background: #ccc;
+            border: 1px solid #999;
+        }
+        footer {
+            text-align: center;
+            font-size: 0.9rem;
+            padding: 1rem;
+            color: #777;
+        }
+    </style>
 </head>
 <body>
-  <h1>🌍 Fallout Simulator (Single HTML Version)</h1>
+    <header>
+        <h1>Fallout Simulation Tool</h1>
+    </header>
+    <div class="container">
+        <label for="country">Ülke Seçin</label>
+        <select id="country">
+            <option value="">-- Seçin --</option>
+            <option value="Germany">Almanya</option>
+            <option value="UK">İngiltere</option>
+            <option value="Russia">Rusya</option>
+            <option value="Iran">İran</option>
+            <option value="Israel">İsrail</option>
+        </select>
 
-  <label for="country">Select Country:</label><br>
-  <select id="country">
-    <option value="">-- Select Country --</option>
-  </select><br>
+        <label for="plant">Nükleer Tesis</label>
+        <select id="plant">
+            <option value="">-- Önce ülke seçin --</option>
+        </select>
 
-  <label for="plant">Select Nuclear Plant:</label><br>
-  <select id="plant">
-    <option value="">-- Select Plant --</option>
-  </select>
+        <label for="scenario">Senaryo Tipi</label>
+        <select id="scenario">
+            <option value="meltdown">Reaktör Erimesi</option>
+            <option value="steam_explosion">Buhar Patlaması</option>
+            <option value="high_temp_attack">Yüksek Isı Saldırısı</option>
+        </select>
 
-  <div id="map"></div>
+        <label for="windSpeed">Rüzgar Hızı (km/s)</label>
+        <input type="number" id="windSpeed" min="0" placeholder="örnek: 30">
 
-  <script>
-    const data = [
-      { country: "Iran", name: "Bushehr", lat: 28.8296, lon: 50.8912 },
-      { country: "Israel", name: "Dimona", lat: 31.0036, lon: 35.1434 },
-      { country: "Russia", name: "Kursk", lat: 51.6600, lon: 35.6833 },
-      { country: "Russia", name: "Kalinin", lat: 57.8833, lon: 35.0167 },
-      { country: "Germany", name: "Isar", lat: 48.6000, lon: 12.3000 },
-      { country: "Germany", name: "Emsland", lat: 52.5000, lon: 7.3167 },
-      { country: "United Kingdom", name: "Sizewell", lat: 52.2133, lon: 1.6217 },
-      { country: "United Kingdom", name: "Hinkley Point", lat: 51.2090, lon: -3.1558 },
-      { country: "Turkey", name: "Akkuyu", lat: 36.1589, lon: 33.5361 },
-      { country: "Kuwait", name: "Shuwaikh Research Reactor", lat: 29.3727, lon: 47.9783 }
-    ];
+        <label for="windDir">Rüzgar Yönü (0-360°)</label>
+        <input type="number" id="windDir" min="0" max="360" placeholder="örnek: 90">
 
-    const countrySel = document.getElementById("country");
-    const plantSel = document.getElementById("plant");
-    let map = L.map("map").setView([35, 45], 4);
-    let marker;
-
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
-    }).addTo(map);
-
-    const countries = [...new Set(data.map(d => d.country))].sort();
-    for (let country of countries) {
-      const opt = document.createElement("option");
-      opt.value = country;
-      opt.textContent = country;
-      countrySel.appendChild(opt);
-    }
-
-    countrySel.addEventListener("change", () => {
-      const selected = countrySel.value;
-      plantSel.innerHTML = '<option value="">-- Select Plant --</option>';
-      const plants = data.filter(d => d.country === selected);
-      for (let p of plants) {
-        const opt = document.createElement("option");
-        opt.value = `${p.lat},${p.lon}`;
-        opt.textContent = p.name;
-        plantSel.appendChild(opt);
-      }
-    });
-
-    plantSel.addEventListener("change", () => {
-      const coords = plantSel.value.split(",");
-      const lat = parseFloat(coords[0]);
-      const lon = parseFloat(coords[1]);
-      map.setView([lat, lon], 7);
-      if (marker) map.removeLayer(marker);
-      marker = L.marker([lat, lon]).addTo(map).bindPopup(plantSel.options[plantSel.selectedIndex].text).openPopup();
-    });
-  </script>
-
-    <!-- Fallout Spread Inputs -->
-    <div style="margin-top: 20px;">
-        <label for="windDirection">Wind Direction (°):</label>
-        <input type="number" id="windDirection" placeholder="e.g. 90"><br><br>
-
-        <label for="windSpeed">Wind Speed (km/h):</label>
-        <input type="number" id="windSpeed" placeholder="e.g. 30"><br><br>
-
-        <label for="temperature">Temperature:</label>
+        <label for="temperature">Hava Sıcaklığı (°C)</label>
         <select id="temperature">
-            <option value="normal">Normal</option>
-            <option value="high">High</option>
-            <option value="low">Low</option>
-        </select><br><br>
+            <option value="low">Düşük (&lt;10°C)</option>
+            <option value="moderate">Orta (10-25°C)</option>
+            <option value="high">Yüksek (&gt;25°C)</option>
+        </select>
 
-        <label for="precipitation">Precipitation:</label>
+        <label for="precipitation">Yağış Durumu</label>
         <select id="precipitation">
-            <option value="none">None</option>
-            <option value="rain">Rain</option>
-            <option value="snow">Snow</option>
-        </select><br><br>
+            <option value="none">Yok</option>
+            <option value="light">Hafif</option>
+            <option value="heavy">Şiddetli</option>
+        </select>
 
-        <button onclick="simulateFallout()">Simulate Fallout</button>
+        <button onclick="calculateFallout()">Hesapla</button>
+
+        <div id="map">
+            [ Harita burada yüklenecek ]
+        </div>
     </div>
+    <footer>
+        &copy; 2025 Fallout Simülasyon Aracı | Geliştirici: Serhan & AI
+    </footer>
 
     <script>
-    function simulateFallout() {
-        const direction = document.getElementById('windDirection').value;
-        const speed = document.getElementById('windSpeed').value;
-        const temp = document.getElementById('temperature').value;
-        const precip = document.getElementById('precipitation').value;
+        const plantsByCountry = {
+            Germany: ["Grafenrheinfeld", "Grohnde", "Isar"],
+            UK: ["Hinkley Point B", "Sizewell B", "Dungeness A"],
+            Russia: ["Kursk", "Smolensk", "Leningrad"],
+            Iran: ["Bushehr", "Fordow", "Natanz"],
+            Israel: ["Dimona"]
+        };
 
-        alert(`Fallout simulated with wind direction ${direction}°, speed ${speed} km/h, temperature ${temp}, precipitation ${precip}.`);
-        // Replace this alert with future fallout visualization logic
-    }
+        document.getElementById("country").addEventListener("change", function() {
+            const plantSelect = document.getElementById("plant");
+            const selected = this.value;
+            plantSelect.innerHTML = "<option>-- Tesis Seçin --</option>";
+            if (plantsByCountry[selected]) {
+                for (let p of plantsByCountry[selected]) {
+                    const opt = document.createElement("option");
+                    opt.value = p;
+                    opt.textContent = p;
+                    plantSelect.appendChild(opt);
+                }
+            }
+        });
+
+        function calculateFallout() {
+            alert("Fallout hesaplama işlemi burada gerçekleştirilecek.");
+        }
     </script>
-    </body>
-    
+</body>
 </html>
