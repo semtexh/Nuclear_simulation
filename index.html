@@ -52,7 +52,7 @@
         <h1>Fallout Simulation Tool</h1>
     </header>
     <div class="container">
-        <label for="country">Ülke Seçin</label>
+        <label for="country">Select Country</label>
         <select id="country">
             <option value="">-- Seçin --</option>
             <option value="Germany">Almanya</option>
@@ -67,7 +67,7 @@
             <option value="">-- Önce ülke seçin --</option>
         </select>
 
-        <label for="scenario">Senaryo Tipi</label>
+        <label for="scenario">Scenario Type</label>
         <select id="scenario">
             <option value="meltdown">Reaktör Erimesi</option>
             <option value="steam_explosion">Buhar Patlaması</option>
@@ -77,7 +77,7 @@
         <label for="windSpeed">Rüzgar Hızı (km/s)</label>
         <input type="number" id="windSpeed" min="0" placeholder="örnek: 30">
 
-        <label for="windDir">Rüzgar Yönü (0-360°)</label>
+        <label for="windDir">Wind Direction (0-360°)</label>
         <input type="number" id="windDir" min="0" max="360" placeholder="örnek: 90">
 
         <label for="temperature">Hava Sıcaklığı (°C)</label>
@@ -87,17 +87,17 @@
             <option value="high">Yüksek (&gt;25°C)</option>
         </select>
 
-        <label for="precipitation">Yağış Durumu</label>
+        <label for="precipitation">Precipitation</label>
         <select id="precipitation">
             <option value="none">Yok</option>
             <option value="light">Hafif</option>
             <option value="heavy">Şiddetli</option>
         </select>
 
-        <button onclick="calculateFallout()">Hesapla</button>
+        <button onclick="calculateFallout()">Calculate</button>
 
         <div id="map">
-            [ Harita burada yüklenecek ]
+            [ Map burada yüklenecek ]
         </div>
     </div>
     <footer>
@@ -116,7 +116,7 @@
         document.getElementById("country").addEventListener("change", function() {
             const plantSelect = document.getElementById("plant");
             const selected = this.value;
-            plantSelect.innerHTML = "<option>-- Tesis Seçin --</option>";
+            plantSelect.innerHTML = "<option>-- Select Facility --</option>";
             if (plantsByCountry[selected]) {
                 for (let p of plantsByCountry[selected]) {
                     const opt = document.createElement("option");
