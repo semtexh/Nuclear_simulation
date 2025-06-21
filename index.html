@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
 <title>Fallout Sim</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://unpkg.com/leaflet/dist/leaflet.css" rel="stylesheet"/>
 <style>
   html, body { height: 100%; margin: 0; }
   #map { height: 100%; }
@@ -21,13 +22,50 @@
     font-size: 14px;
   }
 </style>
-</head>
+<style>
+#controlPanelToggle {
+  position: fixed !important;
+  bottom: 15px !important;
+  left: 15px !important;
+  background-color: red !important;
+  color: white !important;
+  padding: 6px 12px !important;
+  border: 2px solid #000 !important;
+  border-radius: 4px !important;
+  z-index: 999999 !important;
+  cursor: pointer !important;
+  font-family: sans-serif;
+  font-size: 16px;
+  display: block !important;
+}
+.leaflet-control-zoom {
+  display: none !important;
+}
+</style></head>
 <body>
-<div class="control-panel">
-  <label>☢ Facility</label><br/>
-  <select id="facilitySelect">
-  <option value="">-- Select --</option>
-  <option value="Chernobyl">Chernobyl</option>
+<div id="controlPanelToggle" onclick="togglePanel()">☰ Menu</div>
+<script>
+function togglePanel() {
+  const panel = document.getElementById('controlPanel');
+  if (!panel) return;
+  const isHidden = window.getComputedStyle(panel).display === 'none';
+  panel.style.display = isHidden ? 'block' : 'none';
+}
+</script>
+<div id="controlPanelToggle" onclick="togglePanel()">☰ Menu</div>
+<script>
+function togglePanel() {
+  const panel = document.getElementById('controlPanel');
+  if (!panel) return;
+  const isHidden = window.getComputedStyle(panel).display === 'none';
+  panel.style.display = isHidden ? 'block' : 'none';
+}
+</script>
+<div class="control-panel" id="controlPanel" style="display: block;">
+<label>☢ Facility</label><br/>
+<select id="facilitySelect">
+<option value="">-- Select --</option>
+<option value="Chernobyl">Chernobyl</option>
 <option value="Fukushima Daiichi">Fukushima Daiichi</option>
 <option value="Akkuyu">Akkuyu</option>
 <option value="Bushehr (Iran)">Bushehr (Iran)</option>
@@ -43,15 +81,15 @@
 <option value="Kudankulam (India)">Kudankulam (India)</option>
 <option value="Taishan (China)">Taishan (China)</option>
 </select><br/>
-  <label>🧭 Wind Direction (°)</label><br/>
-  <input id="windDir" type="number" min="0" max="359" value="0"/><br/>
-  <label>💨 Wind Speed (km/h)</label><br/>
-  <input id="windSpeed" type="number" min="1" value="20"/><br/>
-  <label>☢ Scenario</label><br/>
+<label>🧭 Wind Direction (°)</label><br/>
+<input id="windDir" max="359" min="0" type="number" value="0"/><br/>
+<label>💨 Wind Speed (km/h)</label><br/>
+<input id="windSpeed" min="1" type="number" value="20"/><br/>
+<label>☢ Scenario</label><br/>
 <select id="scenarioSelect">
-  <option value="1.0">Reactor Meltdown</option>
-  <option value="1.2">High-Temp Attack</option>
-  <option value="0.8">Steam Explosion</option>
+<option value="1.0">Reactor Meltdown</option>
+<option value="1.2">High-Temp Attack</option>
+<option value="0.8">Steam Explosion</option>
 </select>
 </div>
 <div id="map"></div>
@@ -289,14 +327,9 @@ map.on('click', function(e) {
 });
 
 </script>
-
-
-
-
 <footer style="position: absolute; bottom: 10px; left: 10px; font-size: 12px; color: #555;">
-  Nuclear Fallout Dispersion Simulator developed by <strong>Serhan UCAR</strong><br>
+  Nuclear Fallout Dispersion Simulator developed by <strong>Serhan UCAR</strong><br/>
   © 2025. All rights reserved.
 </footer>
-
 </body>
 </html>
