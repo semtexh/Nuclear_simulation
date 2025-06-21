@@ -69,6 +69,25 @@
 
 </head>
 <body>
+
+<button onclick="togglePanel()" style="position: absolute; top: 10px; left: 10px; z-index: 1000; background-color: #ffffffcc; padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px;">
+  ☰ Menu
+</button>
+<script>
+function togglePanel() {
+  const panel = document.querySelector('.control-panel');
+  if (panel) {
+    panel.style.display = (panel.style.display === 'none') ? 'block' : 'none';
+  }
+}
+window.addEventListener('DOMContentLoaded', () => {
+  const panel = document.querySelector('.control-panel');
+  if (panel) {
+    panel.style.display = 'none'; // Default to hidden on load
+  }
+});
+</script>
+
 <div class="control-panel">
     
     <label>📘 Scenario Type</label>
