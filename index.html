@@ -2,6 +2,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+<style>
+.mapboxgl-ctrl-top-left {
+  top: auto !important;
+  bottom: 10px !important;
+  left: 10px !important;
+}
+</style>
+
     <meta charset="UTF-8">
     <title>Fallout Simulator - Weather Enhanced</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -77,7 +86,14 @@
 function togglePanel() {
   const panel = document.querySelector('.control-panel');
   if (panel) {
-    panel.style.display = (panel.style.display === 'none') ? 'block' : 'none';
+    
+    const isHidden = panel.style.display === 'none';
+    panel.style.display = isHidden ? 'block' : 'none';
+    const mapEl = document.getElementById('map');
+    if (mapEl) {
+      mapEl.style.height = isHidden ? 'calc(100vh - 150px)' : '100vh';
+    }
+    
   }
 }
 window.addEventListener('DOMContentLoaded', () => {
