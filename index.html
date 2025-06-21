@@ -1,281 +1,302 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
+<meta charset="utf-8"/>
+<title>Fallout Sim</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <style>
-.mapboxgl-ctrl-top-left {
-  top: auto !important;
-  bottom: 10px !important;
-  left: 10px !important;
-}
-</style>
-
-    <meta charset="UTF-8">
-    <title>Fallout Simulator - Weather Enhanced</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <style>
-        body, html { margin: 0; padding: 0; height: 100%; }
-        #map { height: 100%; }
-        .control-panel {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 10px;
-            border-radius: 8px;
-            z-index: 999;
-            box-shadow: 0 0 8px rgba(0,0,0,0.2);
-            font-family: Arial, sans-serif;
-            font-size: 14px;
-            width: 230px;
-        }
-        .control-panel label {
-            display: block;
-            margin: 6px 0 2px;
-        }
-        .control-panel select, .control-panel input {
-            width: 100%;
-            padding: 5px;
-            margin-bottom: 8px;
-        }
-    </style>
-
-<style>
-  body, html { margin: 0; padding: 0; height: 100%; }
+  html, body { height: 100%; margin: 0; }
   #map { height: 100%; }
-
   .control-panel {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(255, 255, 255, 0.95);
-      padding: 10px;
-      border-radius: 8px;
-      z-index: 999;
-      box-shadow: 0 0 8px rgba(0,0,0,0.2);
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-      width: 230px;
-      overflow-y: auto;
-      max-height: 90vh;
-  }
-
-  @media (max-width: 768px) {
-    .control-panel {
-        position: relative;
-        width: 100%;
-        max-height: none;
-        box-shadow: none;
-        border-radius: 0;
-    }
-    #map {
-        height: calc(100% - 300px); /* Adjust height based on panel height */
-    }
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: white;
+    padding: 10px;
+    z-index: 1000;
+    border-radius: 6px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+    font-family: sans-serif;
+    font-size: 14px;
   }
 </style>
-
 </head>
 <body>
-
-<button onclick="togglePanel()" style="position: absolute; top: 10px; left: 10px; z-index: 1000; background-color: #ffffffcc; padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px;">
-  ☰ Menu
-</button>
-<script>
-function togglePanel() {
-  const panel = document.querySelector('.control-panel');
-  if (panel) {
-    
-    const isHidden = panel.style.display === 'none';
-    panel.style.display = isHidden ? 'block' : 'none';
-    const mapEl = document.getElementById('map');
-    if (mapEl) {
-      mapEl.style.height = isHidden ? 'calc(100vh - 150px)' : '100vh';
-    }
-    
-  }
-}
-window.addEventListener('DOMContentLoaded', () => {
-  const panel = document.querySelector('.control-panel');
-  if (panel) {
-    panel.style.display = 'none'; // Default to hidden on load
-  }
-});
-</script>
-
 <div class="control-panel">
-    
-    <label>📘 Scenario Type</label>
-    <select id="scenarioSelect">
-        <option value="1.0">Reactor Meltdown (Fukushima-like)</option>
-        <option value="1.1">Steam Explosion & Fire (Chernobyl-like)</option>
-        <option value="1.2">High-Temperature Attack</option>
-    </select>
-
-    <label>☢ Select Facility</label>
-    
-    <select id="facilitySelect">
-        <option value="">-- Choose --</option>
-        <option value="Chernobyl">Chernobyl (Ukraine)</option>
-        <option value="Fukushima">Fukushima (Japan)</option>
-        <option value="Bushehr">Bushehr (Iran)</option>
-        <option value="Dimona">Dimona (Israel)</option>
-        <option value="Zaporizhzhia">Zaporizhzhia (Ukraine)</option>
-        <option value="Akkuyu">Akkuyu (Turkey)</option>
-        <option value="Bohunice">Bohunice (Slovakia)</option>
-        <option value="Gravelines">Gravelines (France)</option>
-        <option value="Indian Point">Indian Point (USA)</option>
-        <option value="Kashiwazaki">Kashiwazaki-Kariwa (Japan)</option>
-    </select>
-
-    <label>🧭 Wind Direction</label>
-    <select id="windDir">
-        <option value="0">North</option>
-        <option value="45">NE</option>
-        <option value="90">East</option>
-        <option value="135">SE</option>
-        <option value="180">South</option>
-        <option value="225">SW</option>
-        <option value="270">West</option>
-        <option value="315">NW</option>
-    </select>
-
-    <label>💨 Wind Speed (km/h)</label>
-    <input type="number" id="windSpeed" value="20" min="1" max="300">
-
-    <label>🌡️ Temperature</label>
-    <select id="tempSelect">
-        <option value="1.0">Low (0–10°C)</option>
-        <option value="1.1">Moderate (11–25°C)</option>
-        <option value="1.2">High (26°C and above)</option>
-    </select>
-
-    <label>🌧️ Precipitation</label>
-    <select id="precipSelect">
-        <option value="1.0">None</option>
-        <option value="0.9">Light</option>
-        <option value="0.7">Heavy</option>
-    </select>
+  <label>☢ Facility</label><br/>
+  <select id="facilitySelect">
+  <option value="">-- Select --</option>
+  <option value="Chernobyl">Chernobyl</option>
+<option value="Fukushima Daiichi">Fukushima Daiichi</option>
+<option value="Akkuyu">Akkuyu</option>
+<option value="Bushehr (Iran)">Bushehr (Iran)</option>
+<option value="Dimona (Israel)">Dimona (Israel)</option>
+<option value="Zaporizhzhia (Ukraine)">Zaporizhzhia (Ukraine)</option>
+<option value="Kori (South Korea)">Kori (South Korea)</option>
+<option value="Brokdorf (Germany)">Brokdorf (Germany)</option>
+<option value="Cattenom (France)">Cattenom (France)</option>
+<option value="Ringhals (Sweden)">Ringhals (Sweden)</option>
+<option value="Dukovany (Czechia)">Dukovany (Czechia)</option>
+<option value="Sizewell (UK)">Sizewell (UK)</option>
+<option value="Kashiwazaki-Kariwa (Japan)">Kashiwazaki-Kariwa (Japan)</option>
+<option value="Kudankulam (India)">Kudankulam (India)</option>
+<option value="Taishan (China)">Taishan (China)</option>
+</select><br/>
+  <label>🧭 Wind Direction (°)</label><br/>
+  <input id="windDir" type="number" min="0" max="359" value="0"/><br/>
+  <label>💨 Wind Speed (km/h)</label><br/>
+  <input id="windSpeed" type="number" min="1" value="20"/><br/>
+  <label>☢ Scenario</label><br/>
+<select id="scenarioSelect">
+  <option value="1.0">Reactor Meltdown</option>
+  <option value="1.2">High-Temp Attack</option>
+  <option value="0.8">Steam Explosion</option>
+</select>
 </div>
 <div id="map"></div>
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet-ellipse"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js">
+let falloutClickMarker;
+
+map.on('click', function(e) {
+  const target = e.latlng;
+  if (!falloutMarker) {
+    alert("Please select a nuclear facility first.");
+    return;
+  }
+
+  if (falloutClickMarker) map.removeLayer(falloutClickMarker);
+  falloutClickMarker = L.marker(target).addTo(map);
+
+  const from = falloutMarker.getLatLng();
+  const to = target;
+  const R = 6371e3;
+  const toRad = deg => deg * Math.PI / 180;
+  const φ1 = toRad(from.lat);
+  const φ2 = toRad(to.lat);
+  const Δφ = toRad(to.lat - from.lat);
+  const Δλ = toRad(to.lng - from.lng);
+
+  const a = Math.sin(Δφ/2) ** 2 + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2) ** 2;
+  const d = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  if (d > 500000) {
+    falloutClickMarker.bindPopup("Outside fallout zone").openPopup();
+    return;
+  }
+
+  const angleRad = Math.atan2(
+    Math.sin(Δλ) * Math.cos(φ2),
+    Math.cos(φ1)*Math.sin(φ2) - Math.sin(φ1)*Math.cos(φ2)*Math.cos(Δλ)
+  );
+  const angleDeg = (angleRad * 180 / Math.PI + 360) % 360;
+
+  const windDir = parseFloat(document.getElementById("windDir").value);
+  const falloutDir = (windDir + 180) % 360;
+  const angleDiff = Math.abs(((falloutDir - angleDeg + 540) % 360) - 180);
+  const windSpeed = parseFloat(document.getElementById("windSpeed").value);
+  const scenarioFactor = parseFloat(document.getElementById("scenarioSelect").value);
+  const precipFactor = 1.0;
+
+  const effectiveSpeed = windSpeed * scenarioFactor * precipFactor * Math.cos(toRad(angleDiff));
+  const eta = effectiveSpeed > 0 ? (d / (effectiveSpeed * 1000)) : null;
+
+  falloutClickMarker.bindPopup(
+    eta && eta > 0 ? `ETA: ${eta.toFixed(2)} hrs` : "ETA not calculable"
+  ).openPopup();
+});
+
+</script>
+<script src="https://unpkg.com/leaflet-ellipse">
+let falloutClickMarker;
+
+map.on('click', function(e) {
+  const target = e.latlng;
+  if (!falloutMarker) {
+    alert("Please select a nuclear facility first.");
+    return;
+  }
+
+  if (falloutClickMarker) map.removeLayer(falloutClickMarker);
+  falloutClickMarker = L.marker(target).addTo(map);
+
+  const from = falloutMarker.getLatLng();
+  const to = target;
+  const R = 6371e3;
+  const toRad = deg => deg * Math.PI / 180;
+  const φ1 = toRad(from.lat);
+  const φ2 = toRad(to.lat);
+  const Δφ = toRad(to.lat - from.lat);
+  const Δλ = toRad(to.lng - from.lng);
+
+  const a = Math.sin(Δφ/2) ** 2 + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2) ** 2;
+  const d = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  if (d > 500000) {
+    falloutClickMarker.bindPopup("Outside fallout zone").openPopup();
+    return;
+  }
+
+  const angleRad = Math.atan2(
+    Math.sin(Δλ) * Math.cos(φ2),
+    Math.cos(φ1)*Math.sin(φ2) - Math.sin(φ1)*Math.cos(φ2)*Math.cos(Δλ)
+  );
+  const angleDeg = (angleRad * 180 / Math.PI + 360) % 360;
+
+  const windDir = parseFloat(document.getElementById("windDir").value);
+  const falloutDir = (windDir + 180) % 360;
+  const angleDiff = Math.abs(((falloutDir - angleDeg + 540) % 360) - 180);
+  const windSpeed = parseFloat(document.getElementById("windSpeed").value);
+  const scenarioFactor = parseFloat(document.getElementById("scenarioSelect").value);
+  const precipFactor = 1.0;
+
+  const effectiveSpeed = windSpeed * scenarioFactor * precipFactor * Math.cos(toRad(angleDiff));
+  const eta = effectiveSpeed > 0 ? (d / (effectiveSpeed * 1000)) : null;
+
+  falloutClickMarker.bindPopup(
+    eta && eta > 0 ? `ETA: ${eta.toFixed(2)} hrs` : "ETA not calculable"
+  ).openPopup();
+});
+
+</script>
 <script>
-function bearingTo(lat1, lon1, lat2, lon2) {
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const y = Math.sin(dLon) * Math.cos(lat2 * Math.PI / 180);
-    const x = Math.cos(lat1 * Math.PI / 180) * Math.sin(lat2 * Math.PI / 180) -
-              Math.sin(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.cos(dLon);
-    let brng = Math.atan2(y, x) * 180 / Math.PI;
-    return (brng + 360) % 360;
-}
+const map = L.map('map').setView([38, 35], 5);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-    const facilities = {
-        "Chernobyl": [51.2768, 30.2219],
-        "Fukushima": [37.4215, 141.0328],
-        "Bushehr": [28.8294, 50.8917],
-        "Dimona": [31.0056, 35.1422],
-        "Zaporizhzhia": [47.5111, 34.5858],
-        "Akkuyu": [36.1554, 33.5417],
-        "Bohunice": [48.4945, 17.6837],
-        "Gravelines": [50.9867, 2.1275],
-        "Indian Point": [41.2708, -73.9514],
-        "Kashiwazaki": [37.425, 138.583]
-    };
+const facilities = {
+  "Chernobyl": [51.2768, 30.2219],
+  "Fukushima Daiichi": [37.4215, 141.0328],
+  "Akkuyu": [36.1554, 33.5417],
+  "Bushehr (Iran)": [28.8296, 50.8939],
+  "Dimona (Israel)": [31.0005, 35.1432],
+  "Zaporizhzhia (Ukraine)": [47.5126, 34.5865],
+  "Kori (South Korea)": [35.3219, 129.3026],
+  "Brokdorf (Germany)": [53.8506, 9.3311],
+  "Cattenom (France)": [49.4183, 6.2114],
+  "Ringhals (Sweden)": [57.259, 12.104],
+  "Dukovany (Czechia)": [49.085, 16.144],
+  "Sizewell (UK)": [52.2139, 1.6211],
+  "Kashiwazaki-Kariwa (Japan)": [37.423, 138.592],
+  "Kudankulam (India)": [8.1707, 77.7159],
+  "Taishan (China)": [21.919, 112.989]
+};
 
-    const map = L.map("map").setView([39.0, 35.0], 5);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap contributors"
+let falloutMarker = null;
+let falloutEllipses = [];
+
+function drawEllipticalZones(origin) {
+  const windDir = parseFloat(document.getElementById("windDir").value);
+  const windSpeed = parseFloat(document.getElementById("windSpeed").value);
+  const scenarioFactor = parseFloat(document.getElementById("scenarioSelect").value);
+
+  if (typeof falloutLimitCircle !== 'undefined') map.removeLayer(falloutLimitCircle);
+  falloutLimitCircle = L.circle(origin, {
+    radius: 500000,
+    color: 'gray',
+    fillOpacity: 0.05,
+    weight: 1
+  }).addTo(map);
+falloutEllipses.forEach(e => map.removeLayer(e));
+  falloutEllipses = [];
+
+  for (let hour = 1; hour <= 3; hour++) {
+    const falloutDir = (windDir + 180) % 360;
+    const major = Math.min(windSpeed * 1000 * hour * scenarioFactor, 500000);
+    const minor = major * 0.25;
+
+    const angleRad = falloutDir * Math.PI / 180;
+    const offsetDistance = major * 0.3;
+    const offsetLat = origin.lat + (offsetDistance * Math.cos(angleRad)) / 111320;
+    const offsetLng = origin.lng + (offsetDistance * Math.sin(angleRad)) / 
+                      (40075000 * Math.cos(origin.lat * Math.PI / 180) / 360);
+    const center = L.latLng(offsetLat, offsetLng);
+
+    const color = hour === 1 ? 'red' : hour === 2 ? 'orange' : 'yellow';
+    const ellipse = L.ellipse(center, [minor, major], falloutDir, {
+      color: color,
+      weight: 1,
+      fillOpacity: 0.2
     }).addTo(map);
 
-    let falloutOrigin = null;
-    let falloutZones = [];
-let falloutMarker = null;
-let etaMarker = null;
+    falloutEllipses.push(ellipse);
+  }
+}
 
-    function drawEllipticalZones(origin) {
-        if (falloutMarker) map.removeLayer(falloutMarker);
-        falloutMarker = L.marker(origin).addTo(map);
-    
-        falloutZones.forEach(zone => map.removeLayer(zone));
-        falloutZones = [];
+document.getElementById("facilitySelect").addEventListener("change", () => {
+  const val = document.getElementById("facilitySelect").value;
+  if (!val) return;
 
-        const direction = parseFloat(document.getElementById("windDir").value);
-        const windSpeed = parseFloat(document.getElementById("windSpeed").value);
-        const tempFactor = parseFloat(document.getElementById("tempSelect").value);
-        const precipFactor = parseFloat(document.getElementById("precipSelect").value);
+  const coords = facilities[val];
+  const origin = L.latLng(coords[0], coords[1]);
+  map.setView(origin, 7);
 
-        for (let hour = 1; hour <= 3; hour++) {
-            const scenarioFactor = parseFloat(document.getElementById('scenarioSelect').value);
-        const spread = windSpeed * 1000 * hour * tempFactor * precipFactor * scenarioFactor;
-            const minor = spread * 0.5;
-            const color = hour === 1 ? 'red' : hour === 2 ? 'orange' : 'yellow';
+  if (falloutMarker) map.removeLayer(falloutMarker);
+  falloutMarker = L.marker(origin).addTo(map);
+  drawEllipticalZones(origin);
+});
 
-            const ellipse = L.ellipse(origin, [minor, spread], direction, {
-                color: color,
-                weight: 1,
-                fillOpacity: 0.25
-            }).addTo(map);
+["windDir", "windSpeed", "scenarioSelect"].forEach(id => {
+  document.getElementById(id).addEventListener("change", () => {
+    if (falloutMarker) drawEllipticalZones(falloutMarker.getLatLng());
+  });
+});
 
-            falloutZones.push(ellipse);
-        }
-    }
+let falloutClickMarker;
 
-    function recalculateIfOriginSet() {
-        if (falloutOrigin) drawEllipticalZones(falloutOrigin);
-    }
+map.on('click', function(e) {
+  const target = e.latlng;
+  if (!falloutMarker) {
+    alert("Please select a nuclear facility first.");
+    return;
+  }
 
-    ["windDir", "windSpeed", "tempSelect", "precipSelect", "scenarioSelect"].forEach(id =>
-        document.getElementById(id).addEventListener("change", recalculateIfOriginSet)
-    );
+  if (falloutClickMarker) map.removeLayer(falloutClickMarker);
+  falloutClickMarker = L.marker(target).addTo(map);
 
-    document.getElementById("facilitySelect").addEventListener("change", function () {
-        const selected = this.value;
-        if (!selected || !(selected in facilities)) return;
-        const coords = facilities[selected];
-        falloutOrigin = L.latLng(coords[0], coords[1]);
-        map.setView(falloutOrigin, 7);
-        drawEllipticalZones(falloutOrigin);
-    });
+  const from = falloutMarker.getLatLng();
+  const to = target;
+  const R = 6371e3;
+  const toRad = deg => deg * Math.PI / 180;
+  const φ1 = toRad(from.lat);
+  const φ2 = toRad(to.lat);
+  const Δφ = toRad(to.lat - from.lat);
+  const Δλ = toRad(to.lng - from.lng);
 
-    map.on("click", function (e) {
-        if (falloutMarker && falloutOrigin && falloutMarker.getLatLng().equals(e.latlng)) return;
-        if (etaMarker) map.removeLayer(etaMarker);
-        etaMarker = L.marker(e.latlng, {icon: L.icon({iconUrl: 'https://cdn-icons-png.flaticon.com/512/484/484167.png', iconSize: [20, 20]})}).addTo(map);
-    
-        if (!falloutOrigin) {
-            falloutOrigin = e.latlng;
-            drawEllipticalZones(falloutOrigin);
-        } else {
-            const windSpeed = parseFloat(document.getElementById("windSpeed").value);
-            const dist = map.distance(falloutOrigin, e.latlng);
-            
-        const lat1 = falloutOrigin.lat;
-        const lon1 = falloutOrigin.lng;
-        const lat2 = e.latlng.lat;
-        const lon2 = e.latlng.lng;
+  const a = Math.sin(Δφ/2) ** 2 + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2) ** 2;
+  const d = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  if (d > 500000) {
+    falloutClickMarker.bindPopup("Outside fallout zone").openPopup();
+    return;
+  }
 
-        const bearing = bearingTo(lat1, lon1, lat2, lon2);
-        
-        let windBearing = parseFloat(document.getElementById("windDir").value);
-        windBearing = (windBearing + 180) % 360; // fallout direction is opposite wind direction
-        
-        let angleDiff = Math.abs(bearing - windBearing);
-        if (angleDiff > 180) angleDiff = 360 - angleDiff;
-        const alignmentFactor = Math.cos(angleDiff * Math.PI / 180);
-        const correction = alignmentFactor > 0 ? 1 / alignmentFactor : Infinity;
-        const eta = correction !== Infinity ? (dist / 1000 / windSpeed) * correction : -1;
-        
-            L.popup()
-                .setLatLng(e.latlng)
-                .setContent(
-        eta >= 0 ? "☢ Fallout ETA: " + eta.toFixed(1) + " hours"
-                 : "⚠️ Fallout likely won’t reach this location due to wind direction"
-        )
-                .openOn(map);
-        }
-    });
+  const angleRad = Math.atan2(
+    Math.sin(Δλ) * Math.cos(φ2),
+    Math.cos(φ1)*Math.sin(φ2) - Math.sin(φ1)*Math.cos(φ2)*Math.cos(Δλ)
+  );
+  const angleDeg = (angleRad * 180 / Math.PI + 360) % 360;
+
+  const windDir = parseFloat(document.getElementById("windDir").value);
+  const falloutDir = (windDir + 180) % 360;
+  const angleDiff = Math.abs(((falloutDir - angleDeg + 540) % 360) - 180);
+  const windSpeed = parseFloat(document.getElementById("windSpeed").value);
+  const scenarioFactor = parseFloat(document.getElementById("scenarioSelect").value);
+  const precipFactor = 1.0;
+
+  const effectiveSpeed = windSpeed * scenarioFactor * precipFactor * Math.cos(toRad(angleDiff));
+  const eta = effectiveSpeed > 0 ? (d / (effectiveSpeed * 1000)) : null;
+
+  falloutClickMarker.bindPopup(
+    eta && eta > 0 ? `ETA: ${eta.toFixed(2)} hrs` : "ETA not calculable"
+  ).openPopup();
+});
+
 </script>
+
+
+
+
+<footer style="position: absolute; bottom: 10px; left: 10px; font-size: 12px; color: #555;">
+  Nuclear Fallout Dispersion Simulator developed by <strong>Serhan UCAR</strong><br>
+  © 2025. All rights reserved.
+</footer>
+
 </body>
 </html>
